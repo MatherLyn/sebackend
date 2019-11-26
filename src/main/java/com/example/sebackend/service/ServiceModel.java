@@ -2,6 +2,7 @@ package com.example.sebackend.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.sebackend.entity.User;
+import com.example.sebackend.entity.WorkPiece;
 
 import java.util.List;
 import java.util.Map;
@@ -62,4 +63,16 @@ public interface ServiceModel {
      * @return
      */
     int addUser(User user);
+
+    /**
+     * 查看一个工件
+     * @return
+     */
+    WorkPiece checkWorkPiece (int id);
+
+    /**
+     * 增加一个工件
+     * @return
+     */
+    WorkPiece appendWorkPiece (WorkPiece workPiece);
 }

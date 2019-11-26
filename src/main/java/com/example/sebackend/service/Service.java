@@ -2,6 +2,7 @@ package com.example.sebackend.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.sebackend.entity.User;
+import com.example.sebackend.entity.WorkPiece;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -137,6 +138,79 @@ public class Service implements ServiceModel {
         }
         response.put("code", code);
         response.put("msg", msg);
+        return response;
+    }
+
+    @Override
+    public WorkPiece checkWorkPiece(int id) {
+        WorkPiece workPiece = new WorkPiece();
+        try {
+            String sql = "SELECT * FROM WORKPIECE WHERE id = ?";
+            workPiece = jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<WorkPiece>(WorkPiece.class), id);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+        return workPiece;
+    }
+
+    @Override
+    public WorkPiece appendWorkPiece(WorkPiece workPiece) {
+        System.out.println(workPiece.getId());
+        System.out.println(workPiece.getType());
+        System.out.println(workPiece.getModel());
+        System.out.println(workPiece.getStock());
+        try {
+            String sql = "INSERT INTO WORKPIECE(id, type, model, stock) VALUES (?, ?, ?, ?)";
+            jdbcTemplate.update(sql, workPiece.getId(), workPiece.getType(), workPiece.getModel(), workPiece.getStock());
+        } catch (DataAccessException e) {
+            return null;
+        }
+        return workPiece;
+    }
+
+    public JSONObject checkItem(int id) {
+        WorkPiece workPiece = checkWorkPiece(id);
+        JSONObject response = new JSONObject();
+        if (workPiece == null) {
+            response.put("code", 0);
+            response.put("status", "can not found this workpiece");
+        } else {
+            response.put("code", 1);
+            response.put("status", "success");
+            response.put("id", workPiece.getId());
+            response.put("type", workPiece.getType());
+            response.put("model", workPiece.getModel());
+            response.put("stock", workPiece.getStock());
+        }
+        return response;
+    }
+
+    public JSONObject appendItem(WorkPiece workPiece) {
+        WorkPiece tempWorkPiece = appendWorkPiece(workPiece);
+        JSONObject response = new JSONObject();
+        if (tempWorkPiece == null) {
+            response.put("code", 0);
+            response.put("status", "已经存在该零件了");
+        } else {
+            response.put("code", 1);
+            response.put("status", "添加成功");
+        }
+        return response;
+    }
+
+    public JSONObject getItemList () {
+        JSONObject response = new JSONObject();
+        try {
+            String sql = "SELECT * FROM WORKPIECE";
+            List<WorkPiece> productList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<WorkPiece>(WorkPiece.class));
+            response.put("code", 1);
+            response.put("status", "查找成功");
+            response.put("data", productList);
+        } catch (EmptyResultDataAccessException e) {
+            response.put("code", 0);
+            response.put("status", "产品列表为空");
+            return response;
+        }
         return response;
     }
 }
