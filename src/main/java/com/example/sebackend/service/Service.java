@@ -31,9 +31,13 @@ public class Service implements ServiceModel {
 
     @Override
     public List<User> getAll() {
-        String sql = "SELECT * FROM USER";
-        List<User> response = jdbcTemplate.query(sql, new BeanPropertyRowMapper<User>(User.class));
-        return response;
+        try {
+            String sql = "SELECT * FROM USER";
+            List<User> response = jdbcTemplate.query(sql, new BeanPropertyRowMapper<User>(User.class));
+            return response;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
@@ -138,6 +142,20 @@ public class Service implements ServiceModel {
         }
         response.put("code", code);
         response.put("msg", msg);
+        return response;
+    }
+
+    public JSONObject getUserList() {
+        List<User> data = getAll();
+        JSONObject response = new JSONObject();
+        if (data.equals(null)) {
+            response.put("code", 0);
+            response.put("status", "暂无数据");
+        } else {
+            response.put("data", data);
+            response.put("code", 1);
+            response.put("status", "成功");
+        }
         return response;
     }
 

@@ -28,6 +28,8 @@ public class Controller {
         return service.login(user);
     }
 
+    @RequestMapping(value = "/user/list", method = RequestMethod.GET)
+    public JSONObject getUserList() { return service.getUserList(); }
 
     @RequestMapping(value = "/workpiece/append", method = RequestMethod.POST)
     public JSONObject append(@RequestBody WorkPiece workPiece) { return service.appendItem(workPiece); }
@@ -37,4 +39,14 @@ public class Controller {
 
     @RequestMapping(value = "/workpiece/list", method = RequestMethod.GET)
     public JSONObject getProductList() { return service.getItemList(); }
+
+
+    // 原生js的jsonp请求尝试
+    @RequestMapping(value = "/user/test", method = RequestMethod.GET)
+    public String test(String callback) {
+        JSONObject response = service.getUserList();
+        String json = JSON.toJSONString(response);
+        String result = callback + "(" + json + ")";
+        return result;
+    }
 }
