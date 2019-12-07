@@ -145,6 +145,22 @@ public class Service implements ServiceModel {
         return response;
     }
 
+    public JSONObject appendUser(User user) {
+        System.out.println(user.getName());
+        System.out.println(user.getPwd());
+        System.out.println(user.getTel());
+        int result = addUser(user);
+        JSONObject response = new JSONObject();
+        if (result == -1) {
+            response.put("code", 0);
+            response.put("status", "已经存在该用户了");
+        } else {
+            response.put("code", 1);
+            response.put("status", "添加成功");
+        }
+        return response;
+    }
+
     public JSONObject getUserList() {
         List<User> data = getAll();
         JSONObject response = new JSONObject();
@@ -173,14 +189,12 @@ public class Service implements ServiceModel {
 
     @Override
     public WorkPiece appendWorkPiece(WorkPiece workPiece) {
-        System.out.println(workPiece.getId());
-        System.out.println(workPiece.getType());
-        System.out.println(workPiece.getModel());
-        System.out.println(workPiece.getStock());
         try {
             String sql = "INSERT INTO WORKPIECE(id, type, model, stock) VALUES (?, ?, ?, ?)";
             jdbcTemplate.update(sql, workPiece.getId(), workPiece.getType(), workPiece.getModel(), workPiece.getStock());
         } catch (DataAccessException e) {
+            String sql = "UPDATE WORKPIECE SET stock = stock + ? WHERE type = ?";
+            jdbcTemplate.update(sql, workPiece.getStock(), workPiece.getType());
             return null;
         }
         return workPiece;
@@ -208,7 +222,7 @@ public class Service implements ServiceModel {
         JSONObject response = new JSONObject();
         if (tempWorkPiece == null) {
             response.put("code", 0);
-            response.put("status", "已经存在该零件了");
+            response.put("status", "已为该零件添加库存");
         } else {
             response.put("code", 1);
             response.put("status", "添加成功");

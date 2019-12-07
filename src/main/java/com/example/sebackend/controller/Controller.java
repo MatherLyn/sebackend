@@ -34,6 +34,11 @@ public class Controller {
         return service.login(user);
     }
 
+    @ApiOperation(value = "（后台）增加用户", notes = "务必将所有信息填写", httpMethod = "POST")
+    @ApiImplicitParam(dataType = "User", name = "user", value = "用户", required = true)
+    @RequestMapping(value = "/user/append", method = RequestMethod.POST)
+    public JSONObject appendUser(@RequestBody User user) { return service.appendUser(user); }
+
     @ApiOperation(value = "获取用户列表", notes = "无", httpMethod = "GET")
     @RequestMapping(value = "/user/list", method = RequestMethod.GET)
     public JSONObject getUserList() { return service.getUserList(); }
@@ -41,7 +46,7 @@ public class Controller {
     @ApiOperation(value = "增加零件", notes = "务必将所有信息填写", httpMethod = "POST")
     @ApiImplicitParam(dataType = "WorkPiece", name = "workpiece", value = "零件", required = true)
     @RequestMapping(value = "/workpiece/append", method = RequestMethod.POST)
-    public JSONObject append(@RequestBody WorkPiece workPiece) { return service.appendItem(workPiece); }
+    public JSONObject appendWorkpiece(@RequestBody WorkPiece workPiece) { return service.appendItem(workPiece); }
 
     @ApiOperation(value = "查找零件", notes = "务必将所有信息填写", httpMethod = "GET")
     @ApiImplicitParam(dataType = "int", name = "id", value = "零件ID", required = true)
